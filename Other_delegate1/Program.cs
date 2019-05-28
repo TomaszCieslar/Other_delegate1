@@ -1,40 +1,46 @@
 ﻿using System;
+using System.IO;
 
 namespace Other_delegate1
 {
-    delegate int ChangeNumber(int i);
+   
+
     class Program
     {
+        static FileStream fs;
+        static StreamWriter sw;
 
-        static int number = 5;
+        public delegate void PrintMessage(string s);
 
-        public static int AddNumber(int i)
+        public static void WriteToConsole(string s)
         {
-            number += i;
-            return number;
-        }
-        public static int MultiplyNumber(int i)
-        {
-            number *= i;
-            return number;
-        }
-        public static int GetNumber()
-        {
-            return number;
+            Console.WriteLine("Wiadomosc {0}", s);
         }
 
+        public static void WriteToFile (string s)
+        {
+            fs = new FileStream("c:\\wiaodmosc.txt", FileMode.Append, FileAccess.Write);
+            sw = new StreamWriter(fs);
+
+            sw.WriteLine(s);
+            sw.Flush();
+            sw.Close();
+            fs.Close();
+        }
+
+        public static void SendString(PrintMessage pm)
+        {
+            pm("Witaj Świecie");
+        }
 
         static void Main(string[] args)
         {
-            ChangeNumber cn1 = new ChangeNumber(AddNumber);
-            ChangeNumber cn2 = new ChangeNumber(MultiplyNumber);
+            PrintMessage pm1 = new PrintMessage(WriteToConsole);
+            PrintMessage pm2 = new PrintMessage(WriteToFile);
+            SendString(pm1);
+            SendString(pm2);
 
-            cn1(5);
-            Console.WriteLine("Wartość liczby: {0}", GetNumber());
-            cn2(10);
-            Console.WriteLine("Wartość liczby: {0}", GetNumber());
             Console.ReadLine();
-
 
         }
     }
